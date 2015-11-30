@@ -751,7 +751,7 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
         LDAstepRatio = LDAstep / stWin
         #print LDAstep, LDAstepRatio
         for i in range(Labels.shape[0]):
-            Labels[i] = int(i*stWin/LDAstepRatio);        
+            Labels[i] = int(i*stWin/LDAstepRatio);
         clf = LDA(n_components=LDAdim)
         clf.fit(mtFeaturesToReduce.T, Labels, tol=0.000001)
         MidTermFeaturesNorm = (clf.transform(MidTermFeaturesNorm.T)).T
@@ -763,10 +763,10 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
     clsAll = []
     silAll = []
     centersAll = []
-    
+
     for iSpeakers in sRange:
         cls, means, steps = mlpy.kmeans(MidTermFeaturesNorm.T, k=iSpeakers, plus=True)        # perform k-means clustering
-        
+
         #YDist =   distance.pdist(MidTermFeaturesNorm.T, metric='euclidean')
         #print distance.squareform(YDist).shape
         #hc = mlpy.HCluster()
@@ -794,10 +794,10 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
                         MidTermFeaturesNormTemp2 = MidTermFeaturesNorm[:,cls==c2]
                         Yt = distance.cdist(MidTermFeaturesNormTemp.T, MidTermFeaturesNormTemp2.T)
                         silBs.append(numpy.mean(Yt)*(clusterPerCent+clusterPerCent2)/2.0)
-                silBs = numpy.array(silBs)                            
+                silBs = numpy.array(silBs)
                 silB.append(min(silBs))                            # ... and keep the minimum value (i.e. the distance from the "nearest" cluster)
-        silA = numpy.array(silA); 
-        silB = numpy.array(silB); 
+        silA = numpy.array(silA);
+        silB = numpy.array(silB);
         sil = []
         for c in range(iSpeakers):                                # for each cluster (speaker)
             sil.append( ( silB[c] - silA[c]) / (max(silB[c],  silA[c])+0.00001)  )        # compute silhouette
@@ -812,9 +812,9 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
     # (important: need to retrieve the outlier windows: this is achieved by giving them the value of their nearest non-outlier window)
     cls = numpy.zeros((numOfWindows,))
     for i in range(numOfWindows):
-        j = numpy.argmin(numpy.abs(i-iNonOutLiers))        
+        j = numpy.argmin(numpy.abs(i-iNonOutLiers))
         cls[i] = clsAll[imax][j]
-        
+
     # Post-process method 1: hmm smoothing
     for i in range(1):
         startprob, transmat, means, cov = trainHMM_computeStatistics(MidTermFeaturesNormOr, cls)
@@ -822,8 +822,8 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
         hmm.startprob_ = startprob
         hmm.transmat_ = transmat
         hmm.means_ = means; hmm.covars_ = cov
-        cls = hmm.predict(MidTermFeaturesNormOr.T)                    
-    
+        cls = hmm.predict(MidTermFeaturesNormOr.T)
+
     # Post-process method 2: median filtering:
     cls = scipy.signal.medfilt(cls, 13)
     cls = scipy.signal.medfilt(cls, 11)
@@ -839,7 +839,7 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
         flagsGT, classNamesGT = segs2flags(segStart, segEnd, segLabels, mtStep)            # convert to flags
 
     if PLOT:
-        fig = plt.figure()    
+        fig = plt.figure()
         if numOfSpeakers>0:
             ax1 = fig.add_subplot(111)
         else:
@@ -876,26 +876,26 @@ def speakerDiarizationEvaluateScript(folderName, LDAs):
     types = ('*.wav',  )
     wavFilesList = []
     for files in types:
-        wavFilesList.extend(glob.glob(os.path.join(folderName, files)))    
-    
+        wavFilesList.extend(glob.glob(os.path.join(folderName, files)))
+
     wavFilesList = sorted(wavFilesList)
 
-    # get number of unique speakers per file (from ground-truth)    
+    # get number of unique speakers per file (from ground-truth)
     N = []
-    for wavFile in wavFilesList:        
+    for wavFile in wavFilesList:
         gtFile = wavFile.replace('.wav', '.segments');
         if os.path.isfile(gtFile):
             [segStart, segEnd, segLabels] = readSegmentGT(gtFile)                            # read GT data
             N.append(len(list(set(segLabels))))
         else:
             N.append(-1)
-    
+
     for l in LDAs:
         print "LDA = {0:d}".format(l)
         for i, wavFile in enumerate(wavFilesList):
-            speakerDiarization(wavFile, N[i], 2.0, 0.2, 0.05, l, PLOT = False)            
+            speakerDiarization(wavFile, N[i], 2.0, 0.2, 0.05, l, PLOT = False)
         print
-        
+
 def musicThumbnailing(x, Fs, shortTermSize=1.0, shortTermStep=0.5, thumbnailSize=10.0):
     '''
     This function detects instances of the most representative part of a music recording, also called "music thumbnails".
@@ -903,11 +903,11 @@ def musicThumbnailing(x, Fs, shortTermSize=1.0, shortTermStep=0.5, thumbnailSize
     In particular the following steps are followed:
      - Extract short-term audio features. Typical short-term window size: 1 second
      - Compute the self-silimarity matrix, i.e. all pairwise similarities between feature vectors
-      - Apply a diagonal mask is as a moving average filter on the values of the self-similarty matrix. 
+      - Apply a diagonal mask is as a moving average filter on the values of the self-similarty matrix.
        The size of the mask is equal to the desirable thumbnail length.
       - Find the position of the maximum value of the new (filtered) self-similarity matrix.
        The audio segments that correspond to the diagonial around that position are the selected thumbnails
-    
+
 
     ARGUMENTS:
      - x:            input signal
@@ -915,7 +915,7 @@ def musicThumbnailing(x, Fs, shortTermSize=1.0, shortTermStep=0.5, thumbnailSize
      - shortTermSize:     window size (in seconds)
      - shortTermStep:    window step (in seconds)
      - thumbnailSize:    desider thumbnail size (in seconds)
-    
+
     RETURNS:
      - A1:            beginning of 1st thumbnail (in seconds)
      - A2:            ending of 1st thumbnail (in seconds)
@@ -927,7 +927,7 @@ def musicThumbnailing(x, Fs, shortTermSize=1.0, shortTermStep=0.5, thumbnailSize
      [Fs, x] = basicIO.readAudioFile(inputFile)
      [A1, A2, B1, B2] = musicThumbnailing(x, Fs)
 
-    [1] Bartsch, M. A., & Wakefield, G. H. (2005). Audio thumbnailing of popular music using chroma-based representations. 
+    [1] Bartsch, M. A., & Wakefield, G. H. (2005). Audio thumbnailing of popular music using chroma-based representations.
     Multimedia, IEEE Transactions on, 7(1), 96-104.
     '''
     x = audioBasicIO.stereo2mono(x);
@@ -968,5 +968,3 @@ def musicThumbnailing(x, Fs, shortTermSize=1.0, shortTermStep=0.5, thumbnailSize
             j2 += 1
 
     return (shortTermStep*i1, shortTermStep*i2, shortTermStep*j1, shortTermStep*j2, S)
-
-
