@@ -848,6 +848,7 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
         ax1.axis((0, Duration, -1, len(classNames)))
         ax1.set_yticklabels(classNames)
         ax1.plot(numpy.array(range(len(cls)))*mtStep+mtStep/2.0, cls)
+        # print cls
 
     if os.path.isfile(gtFile):
         if PLOT:
@@ -858,13 +859,16 @@ def speakerDiarization(fileName, numOfSpeakers, mtSize=2.0, mtStep=0.2, stWin=0.
             plt.title("Cluster purity: {0:.1f}% - Speaker purity: {1:.1f}%".format(100*purityClusterMean, 100*puritySpeakerMean) )
     if PLOT:
         plt.xlabel("time (seconds)")
-        #print sRange, silAll    
+        #print sRange, silAll
         if numOfSpeakers<=0:
             plt.subplot(212)
             plt.plot(sRange, silAll)
             plt.xlabel("number of clusters");
             plt.ylabel("average clustering's sillouette");
         plt.show()
+
+    # print "Speakers over time:", cls
+    # return numpy.unique(cls)
 
 def speakerDiarizationEvaluateScript(folderName, LDAs):
     '''

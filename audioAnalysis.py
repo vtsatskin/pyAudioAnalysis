@@ -224,9 +224,9 @@ def silenceRemovalWrapper(inputFile, smoothingWindow, weight):
 
 def speakerDiarizationWrapper(inputFile, numSpeakers, useLDA):
     if useLDA:
-        aS.speakerDiarization(inputFile, numSpeakers, PLOT=True)
+        return aS.speakerDiarization(inputFile, numSpeakers, PLOT=True)
     else:
-        aS.speakerDiarization(inputFile, numSpeakers, LDAdim=0, PLOT=True)
+        return aS.speakerDiarization(inputFile, numSpeakers, LDAdim=0, PLOT=True)
 
 
 def thumbnailWrapper(inputFile, thumbnailWrapperSize):
